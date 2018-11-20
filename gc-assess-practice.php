@@ -22,6 +22,27 @@ function gc_assess_prac_enqueue_scripts() {
 		  time(),
 		  true
 	  );
+
+      $args = array(
+          'post_type' => 'exemplar',
+          'category_name' => 'a_ex1'
+//          'orderby' => 'rand'
+      );
+
+      $exemplars = get_posts( $args );
+      foreach ($exemplars as $exemplar) {
+        $ex_id = $exemplar->ID;
+        $ex_ids[] = $ex_id;
+        $ex_contents[$ex_id] = $exemplar->post_content;
+        $exemplar_gold_levels[$ex_id] = get_field( "gold_level", $ex_id, false);
+      }
+
+	  $data_for_js = array(
+	      'exIds'=> $ex_ids,
+          'exemplars'=> $ex_contents,
+          'exGoldLevels' => $exemplar_gold_levels
+      );
+      wp_localize_script('gcap-main-js', 'exObj', $data_for_js );
   }
 }
 add_action( 'wp_enqueue_scripts', 'gc_assess_prac_enqueue_scripts' );
