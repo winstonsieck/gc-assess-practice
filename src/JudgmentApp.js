@@ -15,6 +15,7 @@ class JudgmentApp extends Component {
         this.handleChoice = this.handleChoice.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.getCase = this.getCase.bind(this);
+        this.saveResults = this.saveResults.bind(this);
         this.state = {
             trial: 1,
             exId: exObj.exIds[0],
@@ -22,7 +23,11 @@ class JudgmentApp extends Component {
             fbVisible: false
         };
     }
+
     handleChoice(option) {
+
+        this.saveResults();
+
         this.setState(() => {
             return {
                 choice: option,
@@ -41,6 +46,7 @@ class JudgmentApp extends Component {
                 this.getCase
             );
         } else {
+            this.saveResults();
             alert("All done");
         }
     }
@@ -54,7 +60,28 @@ class JudgmentApp extends Component {
         });
     }
 
+    saveResults() {
+
+        jQuery.ajax({
+            url : jsforwp_globals.ajax_url,
+            type : 'post',
+            data : {
+                action : 'jsforwp_add_like',
+                like_amt: 10,
+                _ajax_nonce: jsforwp_globals.nonce
+            },
+            success : function( response ) {
+                    if( response == 1 ) {
+                        console.log( 'yay, it worked' );
+                    } else {
+                        alert( 'Something went wrong, try logging in!' );
+                    }
+                }
+        });
+    }
+
     render() {
+        console.log( jsforwp_globals.total_likes );
         return (
             <div>
                 <h2>Case: {this.state.exId}</h2>
