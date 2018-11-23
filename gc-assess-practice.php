@@ -39,9 +39,12 @@ function gc_assess_prac_enqueue_scripts() {
       }
 
 	  $data_for_js = array(
+//          'ajax_url'    => admin_url( 'admin-ajax.php' ),
+//          'nonce'       => wp_create_nonce( 'gcap_scores_nonce' ),
 	      'exIds'=> $ex_ids,
           'exemplars'=> $ex_contents,
           'exGoldLevels' => $exemplar_gold_levels
+//          'total_likes' => get_option( 'jsforwp_likes' ),
       );
       wp_localize_script('gcap-main-js', 'exObj', $data_for_js );
 
@@ -87,8 +90,7 @@ if ( null == $likes  ) {
 
 function jsforwp_add_like( ) {
 
-    // Change the parameter to 'jsforwp_likes_nonce'
-    check_ajax_referer( 'jsforwp_likes_nonce' );
+    check_ajax_referer( 'gcap_scores_nonce' );
 
     $likes = intval( get_option( 'jsforwp_likes' ) );
 

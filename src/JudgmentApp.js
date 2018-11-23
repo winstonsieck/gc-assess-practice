@@ -15,12 +15,13 @@ class JudgmentApp extends Component {
         this.handleChoice = this.handleChoice.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.getCase = this.getCase.bind(this);
-        this.saveResults = this.saveResults.bind(this);
+//        this.saveResults = this.saveResults.bind(this);
         this.state = {
             trial: 1,
             exId: exObj.exIds[0],
             choice: null,
-            fbVisible: false
+            fbVisible: false,
+            scores: []
         };
     }
 
@@ -28,10 +29,17 @@ class JudgmentApp extends Component {
 
         this.saveResults();
 
-        this.setState(() => {
+        const actual = exObj.exGoldLevels[this.state.exId];
+        let correct = 0;
+        if ( option === actual ) {
+            correct = 1;
+        }
+
+        this.setState((prevState) => {
             return {
                 choice: option,
-                fbVisible: true
+                fbVisible: true,
+                scores: prevState.scores.concat(correct)
             };
         });
     }
@@ -46,9 +54,10 @@ class JudgmentApp extends Component {
                 this.getCase
             );
         } else {
-            this.saveResults();
+            // this.saveResults();
             alert("All done");
         }
+// console.log(this.state.scores);
     }
 
     getCase() {
@@ -81,7 +90,7 @@ class JudgmentApp extends Component {
     }
 
     render() {
-        console.log( jsforwp_globals.total_likes );
+console.log( jsforwp_globals.total_likes );
         return (
             <div>
                 <h2>Case: {this.state.exId}</h2>
