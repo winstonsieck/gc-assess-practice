@@ -6,6 +6,7 @@ const { Component } = wp.element;
 import PresentEx from './PresentEx';
 import ShowFeedback from './ShowFeedback';
 import Options from './Options';
+import ShowEnd from './ShowEnd';
 
 const nTrials = exObj.exIds.length;
 
@@ -15,19 +16,19 @@ class JudgmentApp extends Component {
         this.handleChoice = this.handleChoice.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.getCase = this.getCase.bind(this);
-//        this.saveResults = this.saveResults.bind(this);
+        this.saveResults = this.saveResults.bind(this);
         this.state = {
             trial: 1,
             exId: exObj.exIds[0],
             choice: null,
             fbVisible: false,
-            scores: []
+            scores: [],
+            accuracy: 0,
+            allDone: false
         };
     }
 
     handleChoice(option) {
-
-        this.saveResults();
 
         const actual = exObj.exGoldLevels[this.state.exId];
         let correct = 0;
@@ -54,10 +55,16 @@ class JudgmentApp extends Component {
                 this.getCase
             );
         } else {
-            // this.saveResults();
-            alert("All done");
+            let response = this.saveResults();
+            this.setState(() => {
+                return {
+                    allDone: true,
+                    accuracy: response
+                };
+            });
+            // alert("All done");
         }
-// console.log(this.state.scores);
+// console.log(exObj.percent_correct);
     }
 
     getCase() {
@@ -72,16 +79,17 @@ class JudgmentApp extends Component {
     saveResults() {
 
         jQuery.ajax({
-            url : jsforwp_globals.ajax_url,
+            url : exObj.ajax_url,
             type : 'post',
             data : {
-                action : 'jsforwp_add_like',
-                like_amt: 10,
-                _ajax_nonce: jsforwp_globals.nonce
+                action : 'gcap_add_scores',
+                scores: this.state.scores,
+                _ajax_nonce: exObj.nonce
             },
             success : function( response ) {
-                    if( response == 1 ) {
-                        console.log( 'yay, it worked' );
+                    if( response ) {
+                        // alert( 'Your score is: ' + response );
+                        jQuery('#final-score').html( 100*response );
                     } else {
                         alert( 'Something went wrong, try logging in!' );
                     }
@@ -90,21 +98,23 @@ class JudgmentApp extends Component {
     }
 
     render() {
-console.log( jsforwp_globals.total_likes );
         return (
             <div>
-                <h2>Case: {this.state.exId}</h2>
-                <PresentEx exemplar={ exObj.exemplars[this.state.exId] } />
+                { this.state.allDone && <ShowEnd /> }
+
+                { !this.state.allDone && <h2>Case: {this.state.exId}</h2> }
+                { !this.state.allDone && <PresentEx exemplar={ exObj.exemplars[this.state.exId] } /> }
                 {!this.state.fbVisible &&
                     <Options handleChoice={this.handleChoice}/>
                 }
-                {this.state.fbVisible &&
+                { (this.state.fbVisible && !this.state.allDone) &&
                     <ShowFeedback
                         choice={ this.state.choice }
                         actual={ exObj.exGoldLevels[this.state.exId] }
                 />
                 }
-                { this.state.fbVisible && <button onClick={ this.handleNext }>Next</button> }
+                { (this.state.fbVisible && !this.state.allDone) &&
+                    <button onClick={ this.handleNext }>Next</button> }
             </div>
         );
     }
