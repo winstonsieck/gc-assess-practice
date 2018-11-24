@@ -3,9 +3,10 @@
 
 const { Component } = wp.element;
 //import './judgmentapp.scss';
+//import SimpleExpansionPanel from './PresentContext';
 import PresentEx from './PresentEx';
-import ShowFeedback from './ShowFeedback';
 import Options from './Options';
+import ShowFeedback from './ShowFeedback';
 import ShowEnd from './ShowEnd';
 
 const nTrials = exObj.exIds.length;
@@ -101,9 +102,14 @@ class JudgmentApp extends Component {
         return (
             <div>
                 { this.state.allDone && <ShowEnd /> }
-
-                { !this.state.allDone && <h2>Case: {this.state.exId}</h2> }
-                { !this.state.allDone && <PresentEx exemplar={ exObj.exemplars[this.state.exId] } /> }
+                {/*{!this.state.allDone &&*/}
+                    {/*<SimpleExpansionPanel />*/}
+                {/*}*/}
+                { !this.state.allDone &&
+                    <PresentEx
+                        exId ={ this.state.exId }
+                        exemplar={ exObj.exemplars[this.state.exId] }
+                    /> }
                 {!this.state.fbVisible &&
                     <Options handleChoice={this.handleChoice}/>
                 }
@@ -111,10 +117,8 @@ class JudgmentApp extends Component {
                     <ShowFeedback
                         choice={ this.state.choice }
                         actual={ exObj.exGoldLevels[this.state.exId] }
-                />
-                }
-                { (this.state.fbVisible && !this.state.allDone) &&
-                    <button onClick={ this.handleNext }>Next</button> }
+                        handleNext={ this.handleNext }
+                    /> }
             </div>
         );
     }
