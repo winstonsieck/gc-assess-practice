@@ -17,12 +17,12 @@ const styles = theme => ({
         width: '100%',
     },
     heading: {
-        fontSize: theme.typography.pxToRem(15),
+        fontSize: theme.typography.pxToRem(24),
         fontWeight: theme.typography.fontWeightRegular,
     },
 });
 
-function SimpleExpansionPanel(props) {
+function PresentContext(props) {
     const { classes } = props;
     return (
         <div className={classes.root}>
@@ -31,7 +31,7 @@ function SimpleExpansionPanel(props) {
                     <Typography className={classes.heading}>Problem Statement</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                    <Typography>
+                    <Typography className={classes.heading}>
                         Please write a paragraph of <em>Lorem ipsum</em> from memory
                     </Typography>
                 </ExpansionPanelDetails>
@@ -41,7 +41,7 @@ function SimpleExpansionPanel(props) {
                     <Typography className={classes.heading}>Rubric Definition</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                    <Typography>
+                    <Typography className={classes.heading}>
                         The rubric defines the quality of the Lorem Ipsum produced.
                         <ul>
                             <li>Low response will have indicators of bland Lorem ipsum</li>
@@ -55,8 +55,8 @@ function SimpleExpansionPanel(props) {
     );
 }
 
-SimpleExpansionPanel.propTypes = {
+PresentContext.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SimpleExpansionPanel);
+export default withStyles(styles)(PresentContext);
