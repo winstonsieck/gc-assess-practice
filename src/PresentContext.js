@@ -1,4 +1,8 @@
 
+
+// import { Panel, PanelBody, PanelRow } from '@wordpress/components';
+// const { Panel, PanelBody, PanelRow } = wp.components;
+
 //import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';

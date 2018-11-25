@@ -3,7 +3,8 @@
 
 const { Component } = wp.element;
 //import './judgmentapp.scss';
-//import SimpleExpansionPanel from './PresentContext';
+import SimpleExpansionPanel from './PresentContext';
+//import MyPanel from './WpPanel';
 import PresentEx from './PresentEx';
 import Options from './Options';
 import ShowFeedback from './ShowFeedback';
@@ -102,6 +103,7 @@ class JudgmentApp extends Component {
         return (
             <div>
                 { this.state.allDone && <ShowEnd /> }
+                <SimpleExpansionPanel />
                 {/*{!this.state.allDone &&*/}
                     {/*<SimpleExpansionPanel />*/}
                 {/*}*/}
