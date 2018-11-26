@@ -6,6 +6,7 @@ const { Component } = wp.element;
 import PresentContext from './PresentContext';
 import PresentEx from './PresentEx';
 import Options from './Options';
+import Rationale from './Rationale';
 import ShowFeedback from './ShowFeedback';
 import ShowEnd from './ShowEnd';
 
@@ -15,6 +16,7 @@ class JudgmentApp extends Component {
     constructor( props ) {
         super(props);
         this.handleChoice = this.handleChoice.bind(this);
+        this.handleRationale = this.handleRationale.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.getCase = this.getCase.bind(this);
         this.saveResults = this.saveResults.bind(this);
@@ -23,9 +25,11 @@ class JudgmentApp extends Component {
             exId: exObj.exIds[0],
             choice: null,
             fbVisible: false,
+            ratVisible: false,
             scores: [],
             accuracy: 0,
-            allDone: false
+            allDone: false,
+            rationales: []
         };
     }
 
@@ -40,12 +44,34 @@ class JudgmentApp extends Component {
         this.setState((prevState) => {
             return {
                 choice: option,
-                fbVisible: true,
+                // fbVisible: true,
+                ratVisible: true,
                 scores: prevState.scores.concat(correct)
             };
         });
     }
 
+
+    handleRationale(rationale) {
+        if (!rationale) {
+            return "Enter a valid rationale";
+        }
+        // else if (this.state.rationales.indexOf(rationale) > -1) {
+        //     return "This rationale already exists";
+        // }
+        this.setState(prevState => {
+            return {
+                // could also use "push" but would directly manipulate this.state / prevState.
+                // approach below doesn't
+                // see section 4, lecture 37, 4:30
+                rationales: prevState.rationales.concat(rationale),
+                fbVisible: true,
+                ratVisible: false
+            };
+        });
+console.log(this.state.rationales);
+    }
+    
     handleNext() {
         if (this.state.trial < nTrials) {
             this.setState((prevState) => {
@@ -110,8 +136,14 @@ class JudgmentApp extends Component {
                         exId ={ this.state.exId }
                         exemplar={ exObj.exemplars[this.state.exId] }
                     /> }
-                {!this.state.fbVisible &&
+                { (!this.state.ratVisible && !this.state.fbVisible) &&
                     <Options handleChoice={this.handleChoice}/>
+                }
+                {this.state.ratVisible &&
+                    <Rationale
+                        choice={ this.state.choice }
+                        handleRationale={this.handleRationale}
+                    />
                 }
                 { (this.state.fbVisible && !this.state.allDone) &&
                     <ShowFeedback
