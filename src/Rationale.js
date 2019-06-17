@@ -21,20 +21,15 @@ class Rationale extends Component {
             return { error };
         });
 
-        //clear input if no error
-        if (!error) {
-            e.target.elements.rationale.value = "";
-        }
     };
     render() {
         return (
-            <div>
-                <p>You chose: <b>{this.props.choice}</b> <br /></p>
-                {/*{this.state.error && <p>{this.state.error}</p>}*/}
+            <div id="rationale">
+                <p>You chose: <b>{this.props.choice}</b> </p>
+                {this.state.error && <p>{this.state.error}</p>}
                 <form onSubmit={this.handleRationaleObj}>
                     <span>Please explain your choice:</span>
-                    <textarea name="rationale" cols={40} rows={5} />
-                    {/*<input type="text" name="rationale" />*/}
+                    <textarea name="rationale" cols={40} rows={5} maxLength={1000} required placeholder={"500 characters or less"} />
                     <button className="button">Enter Rationale</button>
                 </form>
             </div>

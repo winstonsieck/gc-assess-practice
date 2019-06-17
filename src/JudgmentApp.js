@@ -56,20 +56,17 @@ class JudgmentApp extends Component {
         if (!rationale) {
             return "Enter a valid rationale";
         }
-        // else if (this.state.rationales.indexOf(rationale) > -1) {
-        //     return "This rationale already exists";
-        // }
+        else if (rationale.length > 500) {
+            return "Trim your rationale down to 500 characters";
+        }
         this.setState(prevState => {
             return {
-                // could also use "push" but would directly manipulate this.state / prevState.
-                // approach below doesn't
-                // see section 4, lecture 37, 4:30
                 rationales: prevState.rationales.concat(rationale),
                 fbVisible: true,
                 ratVisible: false
             };
         });
-console.log(this.state.rationales);
+console.log(rationale.length);
     }
     
     handleNext() {
@@ -123,7 +120,12 @@ console.log(this.state.rationales);
                 }
         });
     }
-
+    componentDidUpdate() {
+        if ( document.getElementById("rationale") ) {
+            const elDiv = document.getElementById("rationale");
+            elDiv.scrollIntoView();
+        }
+    }
     render() {
         return (
             <div>

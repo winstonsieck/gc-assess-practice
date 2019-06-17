@@ -2,7 +2,7 @@
 /*
    Plugin Name: GC Assess Practice
    Version: 1.0.0
-   Author: Winston Sieck
+   Author: Global Cognition
    Author URI: https://www.globalcognition.org
    Description: Serve up exemplars to practice competency assessments
    Text Domain: gc-assess-prac
