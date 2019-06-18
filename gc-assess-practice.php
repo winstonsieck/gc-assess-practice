@@ -11,6 +11,7 @@
 
 defined( 'ABSPATH' ) or die( 'No direct access!' );
 
+include_once 'assets/lib/cpt-setup.php';
 
 function gc_assess_prac_enqueue_scripts() {
 
