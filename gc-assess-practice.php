@@ -36,6 +36,7 @@ function gc_assess_prac_enqueue_scripts() {
           $comp_num = 2;
           $task_num = 9;
           $data_for_js = pull_data_cpts($comp_num,$task_num);
+          d($data_for_js);
 
           wp_localize_script('gcap-main-js', 'exObj', $data_for_js);
 
@@ -83,6 +84,48 @@ function gcap_add_scores( ) {
 
 }
 add_action( 'wp_ajax_gcap_add_scores', 'gcap_add_scores' );
+
+// Genesis activation hook - if statement in function has it run only on a given page
+add_action('genesis_before_content','save_data');
+/*
+ * Calls the insert function from the class judg_db to insert exemplar data into the table
+ */
+function save_data() {
+    $page_slug = 'judgment-test';
+    // test data
+    $comp_num = 2;
+    $task_num = 9;
+    $learner_level = 1;
+    $learner_rationale = 'i chose this for a reason';
+    $judg_time = '2:00:00';
+    global $current_user;
+    if(is_page($page_slug)) {
+        $db = new judg_db;
+        $cpt_data = pull_data_cpts($comp_num,$task_num);
+        for ($i=0;$i<sizeof($cpt_data['exIds']);$i++) {
+            $ex_id = $cpt_data['exIds'][$i];
+            $gold_level = $cpt_data['exGoldLevels'][$ex_id];
+            if($learner_level==$gold_level){
+                $judg_corr = 1;
+            } else {
+                $judg_corr = 0;
+            }
+            $db_data = array(
+                'learner_id' => $current_user->ID,
+                'trial_num' => $i+1,
+                'comp_num' => $comp_num,
+                'task_num' => $task_num,
+                'ex_title' => get_the_title($ex_id),
+                'learner_level' => $learner_level,
+                'gold_level' => $gold_level,
+                'judg_corr' => $judg_corr,
+                'judg_time'  => $judg_time,
+                'learner_rationale' => $learner_rationale,
+            );
+            $db->insert($db_data);
+        }
+    }
+}
 
 
 require_once( 'assets/lib/plugin-page.php' );
