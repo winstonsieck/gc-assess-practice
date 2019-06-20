@@ -25,6 +25,7 @@ function register_cpt_exemplar() {
     );
     register_post_type('exemplar',$args);
 }
+
 add_action('init',__NAMESPACE__ . '\register_cpt_competency');
 /*
  * Adds the "Competency" custom post type
@@ -39,14 +40,17 @@ function register_cpt_competency() {
         'search_items' => ('Search Competencies'),
         'view_item' => ('View Competency'),
     );
+
     $args = array(
         'label' => __('Competencies', 'competencies'),
         'labels' => $labels,
         'public' => true,
         'taxonomies' => array('category'),
     );
+
     register_post_type('competency',$args);
 }
+
 add_action('init',__NAMESPACE__ . '\register_cpt_scenario');
 /*
  * Adds the "Scenario" custom post type
@@ -61,11 +65,13 @@ function register_cpt_scenario() {
         'search_items' => ('Search Scenarios'),
         'view_item' => ('View Scenario'),
     );
+
     $args = array(
         'label' => __('Scenarios', 'scenarios'),
         'labels' => $labels,
         'public' => true,
         'taxonomies' => array('category'),
     );
+
     register_post_type('scenario',$args);
 }
