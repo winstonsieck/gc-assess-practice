@@ -11,6 +11,11 @@
 
 defined( 'ABSPATH' ) or die( 'No direct access!' );
 
+include_once 'assets/lib/cpt-setup.php';
+
+include_once 'assets/lib/judgments-db.php';
+// Call gcap_create_table on plugin activation.
+register_activation_hook(__FILE__,'gcap_create_table'); // this function call has to happen here
 
 function gc_assess_prac_enqueue_scripts() {
 
@@ -28,32 +33,10 @@ function gc_assess_prac_enqueue_scripts() {
               true
           );
 
-          $args = array(
-              'post_type' => 'exemplar',
-              'category_name' => 'a_ex1'
-          );
+          $comp_num = 2;
+          $task_num = 9;
+          $data_for_js = pull_data_cpts($comp_num,$task_num);
 
-          $exemplars = get_posts($args);
-          foreach ($exemplars as $exemplar) {
-              $ex_id = $exemplar->ID;
-              $ex_ids[] = $ex_id;
-              $ex_contents[$ex_id] = $exemplar->post_content;
-              $exemplar_gold_levels[$ex_id] = get_field("gold_level", $ex_id, false);
-          }
-
-          $percent_correct = get_user_meta( $current_user->ID, 'percent_correct', true);
-          if ( $percent_correct == null ) {
-              $percent_correct = 0;
-          }
-
-          $data_for_js = array(
-              'ajax_url' => admin_url('admin-ajax.php'),
-              'nonce' => wp_create_nonce('gcap_scores_nonce'),
-              'exIds' => $ex_ids,
-              'exemplars' => $ex_contents,
-              'exGoldLevels' => $exemplar_gold_levels,
-              'percent_correct' => $percent_correct
-          );
           wp_localize_script('gcap-main-js', 'exObj', $data_for_js);
 
       } else {
