@@ -12,6 +12,10 @@
 defined( 'ABSPATH' ) or die( 'No direct access!' );
 
 include_once 'assets/lib/cpt-setup.php';
+include_once 'assets/lib/judgments-db.php';
+// Call gcap_create_table on plugin activation.
+register_activation_hook(__FILE__,'gcap_create_table'); // this function call has to happen here
+
 
 function gc_assess_prac_enqueue_scripts() {
 
@@ -29,32 +33,11 @@ function gc_assess_prac_enqueue_scripts() {
               true
           );
 
-          $args = array(
-              'post_type' => 'exemplar',
-              'category_name' => 'a_ex1'
-          );
+          $comp_num = 2;
+          $task_num = 9;
+          $data_for_js = pull_data_cpts($comp_num,$task_num);
+          d($data_for_js);
 
-          $exemplars = get_posts($args);
-          foreach ($exemplars as $exemplar) {
-              $ex_id = $exemplar->ID;
-              $ex_ids[] = $ex_id;
-              $ex_contents[$ex_id] = $exemplar->post_content;
-              $exemplar_gold_levels[$ex_id] = get_field("gold_level", $ex_id, false);
-          }
-
-          $percent_correct = get_user_meta( $current_user->ID, 'percent_correct', true);
-          if ( $percent_correct == null ) {
-              $percent_correct = 0;
-          }
-
-          $data_for_js = array(
-              'ajax_url' => admin_url('admin-ajax.php'),
-              'nonce' => wp_create_nonce('gcap_scores_nonce'),
-              'exIds' => $ex_ids,
-              'exemplars' => $ex_contents,
-              'exGoldLevels' => $exemplar_gold_levels,
-              'percent_correct' => $percent_correct
-          );
           wp_localize_script('gcap-main-js', 'exObj', $data_for_js);
 
       } else {
@@ -101,6 +84,48 @@ function gcap_add_scores( ) {
 
 }
 add_action( 'wp_ajax_gcap_add_scores', 'gcap_add_scores' );
+
+// Genesis activation hook - if statement in function has it run only on a given page
+add_action('genesis_before_content','save_data');
+/*
+ * Calls the insert function from the class judg_db to insert exemplar data into the table
+ */
+function save_data() {
+    $page_slug = 'judgment-test';
+    // test data
+    $comp_num = 2;
+    $task_num = 9;
+    $learner_level = 1;
+    $learner_rationale = 'i chose this for a reason';
+    $judg_time = '2:00:00';
+    global $current_user;
+    if(is_page($page_slug)) {
+        $db = new judg_db;
+        $cpt_data = pull_data_cpts($comp_num,$task_num);
+        for ($i=0;$i<sizeof($cpt_data['exIds']);$i++) {
+            $ex_id = $cpt_data['exIds'][$i];
+            $gold_level = $cpt_data['exGoldLevels'][$ex_id];
+            if($learner_level==$gold_level){
+                $judg_corr = 1;
+            } else {
+                $judg_corr = 0;
+            }
+            $db_data = array(
+                'learner_id' => $current_user->ID,
+                'trial_num' => $i+1,
+                'comp_num' => $comp_num,
+                'task_num' => $task_num,
+                'ex_title' => get_the_title($ex_id),
+                'learner_level' => $learner_level,
+                'gold_level' => $gold_level,
+                'judg_corr' => $judg_corr,
+                'judg_time'  => $judg_time,
+                'learner_rationale' => $learner_rationale,
+            );
+            $db->insert($db_data);
+        }
+    }
+}
 
 
 require_once( 'assets/lib/plugin-page.php' );

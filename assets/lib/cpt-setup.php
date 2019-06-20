@@ -3,7 +3,6 @@
  * Sets up the Exemplar, Competency, and Scenario CPTs.
  */
 namespace GC\Custom;
-
 add_action('init',__NAMESPACE__ . '\register_cpt_exemplar');
 /*
  * Adds the "Exemplar" custom post type
@@ -18,14 +17,12 @@ function register_cpt_exemplar() {
         'search_items' => ('Search Exemplars'),
         'view_item' => ('View Exemplar'),
     );
-
     $args = array(
         'label' => __('Exemplars', 'exemplars'),
         'labels' => $labels,
         'public' => true,
         'taxonomies' => array('category'),
     );
-
     register_post_type('exemplar',$args);
 }
 
